@@ -1,15 +1,69 @@
 #!/bin/bash
-#window=$(stty -a | tr \; \\012 |grep -E 'rows|columns' | cut '-d ' -f3)
-export NEWT_COLORS="root=,black"
-OPTION=$(whiptail --title  "Welcome GPG-FIX !" --menu "" 0 0 0 \
-"1" "Fix GPG Manjaro" \
-"2" "Fix GPG Manjaro + Chaotic" \
-"3" "Fix GPG Manjaro + BlackArch" \
-"4" "Fix GPG Manjaro + Chaotic + BlackArch"  3>&1 1>&2 2>&3 )
- 
-exitstatus=$?
-if [ $exitstatus = 0 ];  then
-     echo "Your chosen option:" $OPTION
+mainmenu(){
+     export NEWT_COLORS="root=,black"
+	if [ "${1}" = "" ]; then
+		nextitem="."
+	else
+		nextitem=${1}
+	fi
+	options=()
+	options+=("${txtlanguage}" "Language")
+	options+=("${txtsetkeymap}" "(loadkeys ...)")
+	options+=("${txteditor}" "(${txtoptional})")
+	options+=("${txtdiskpartmenu}" "")
+	options+=("${txtselectpartsmenu}" "")
+	options+=("" "")
+	options+=("${txtreboot}" "")
+	sel=$(whiptail --title "Welcome GPG-FIX !" --cancel-button "${txtexit}" --default-item "${nextitem}" --menu "" 0 0 0 \
+		"${options[@]}" \
+		3>&1 1>&2 2>&3)
+	if [ "$?" = "0" ]; then
+		case ${sel} in
+			"${txtlanguage}")
+				chooselanguage
+				nextitem="${txtsetkeymap}"
+			;;
+			"${txtsetkeymap}")
+				setkeymap
+				nextitem="${txtdiskpartmenu}"
+			;;
+			"${txteditor}")
+				chooseeditor
+				nextitem="${txtdiskpartmenu}"
+			;;
+			"${txtdiskpartmenu}")
+				diskpartmenu
+				nextitem="${txtselectpartsmenu}"
+			;;
+			"${txtselectpartsmenu}")
+				selectparts
+				nextitem="${txtreboot}"
+			;;
+			"${txthelp}")
+				help
+				nextitem="${txtreboot}"
+			;;
+			"${txtchangelog}")
+				showchangelog
+				nextitem="${txtreboot}"
+			;;
+			"${txtreboot}")
+				rebootpc
+				nextitem="${txtreboot}"
+			;;
+		esac
+		mainmenu "${nextitem}"
+	else
+		clear
+	fi
+}
+if [ "${chroot}" = "1" ]; then
+	case ${command} in
+	esac
 else
-     echo "You chose Cancel."
+	loadstrings
+	mainmenu
 fi
+loadstrings(){
+txtexit="Отмена"
+}
