@@ -1,24 +1,15 @@
 #!/bin/bash
-mainmenu(){
-     export NEWT_COLORS="root=,black"
-	if [ "${1}" = "" ]; then
-		nextitem="."
-	else
-		nextitem=${1}
-	fi
-	options=()
-	options+=("${txtlanguage}" "Language")
-	options+=("${txtsetkeymap}" "(loadkeys ...)")
-	options+=("${txteditor}" "(${txtoptional})")
-	options+=("${txtdiskpartmenu}" "")
-	options+=("${txtselectpartsmenu}" "")
-	options+=("" "")
-	options+=("${txtreboot}" "")
-	sel=$(whiptail --title "Welcome GPG-FIX !" --cancel-button "${txtexit}" --default-item "${nextitem}" --menu "" 0 0 0 \
-		"${options[@]}" \
-		3>&1 1>&2 2>&3)
-	if [ "$?" = "0" ]; then
-		case ${sel} in
+export NEWT_COLORS="root=,black"
+txtmainmenu="Test Menu Dialog"
+OPTION=$(whiptail --title "${txtmainmenu}" --default-item "${nextitem}" --menu  "Choose your option" 15 60 4 \
+"" "Grilled Spicy Sausage"  \
+"" "Grilled Halloumi Cheese" \
+"" "Charcoaled Chicken Wings" \
+"" "Fried Aubergine"  3>&1 1>&2 2>&3)
+ 
+exitstatus=$?
+if [ $exitstatus = 0 ];  then
+     case ${OPTION} in
 			"${txtlanguage}")
 				chooselanguage
 				nextitem="${txtsetkeymap}"
@@ -31,39 +22,7 @@ mainmenu(){
 				chooseeditor
 				nextitem="${txtdiskpartmenu}"
 			;;
-			"${txtdiskpartmenu}")
-				diskpartmenu
-				nextitem="${txtselectpartsmenu}"
-			;;
-			"${txtselectpartsmenu}")
-				selectparts
-				nextitem="${txtreboot}"
-			;;
-			"${txthelp}")
-				help
-				nextitem="${txtreboot}"
-			;;
-			"${txtchangelog}")
-				showchangelog
-				nextitem="${txtreboot}"
-			;;
-			"${txtreboot}")
-				rebootpc
-				nextitem="${txtreboot}"
-			;;
 		esac
-		mainmenu "${nextitem}"
-	else
+		else
 		clear
 	fi
-}
-if [ "${chroot}" = "1" ]; then
-	case ${command} in
-	esac
-else
-	loadstrings
-	mainmenu
-fi
-loadstrings(){
-txtexit="Отмена"
-}
